@@ -7,12 +7,14 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     reactRouter(),
+    /*
     babel({
       include: /\.[jt]sx?$/,
       plugins: [
         ["babel-plugin-react-compiler", { target: "19" }],
       ],
     }),
+    */
   ],
   resolve: {
     tsconfigPaths: true,
