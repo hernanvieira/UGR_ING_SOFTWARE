@@ -1,6 +1,8 @@
-import { useCallback, useState } from "react";
+import { useState, useCallback } from "react";
 import { fetchRawCsv } from "../services/csvFetcher";
 import { parseCsvToObjects } from "../utils/csvParser";
+
+const MIN_LOADING_TIME = 300;
 
 export default function useLoadDataset<T>() {
     const [data, setData] = useState<T[]>([]);
@@ -10,8 +12,15 @@ export default function useLoadDataset<T>() {
     const execute = useCallback(async (key: string) => {
         setIsLoading(true);
         setError(null);
+
+        const minTimePromise = new Promise(resolve => setTimeout(resolve, MIN_LOADING_TIME));
+
         try {
-            const raw = await fetchRawCsv(key);
+            const [raw] = await Promise.all([
+                fetchRawCsv(key),
+                minTimePromise
+            ]);
+
             const parsed = parseCsvToObjects<T>(raw);
             setData(parsed);
             return parsed;

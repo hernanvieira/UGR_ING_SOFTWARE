@@ -3,6 +3,7 @@ import DataTable from "~/features/shared/ui/table/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 import useLoadDataset from "~/features/shared/hooks/useLoadDataset";
 import { useEffect } from "react";
+import { formatDate, formatCurrency } from "~/features/shared/utils/formatters";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -30,36 +31,43 @@ const columns: ColumnDef<Person>[] = [
   { header: "ID", accessorKey: "id" },
   { header: "Nombres", accessorKey: "nombres" },
   { header: "Apellidos", accessorKey: "apellidos" },
-  { header: "Fecha Nacimiento", accessorKey: "fecha_nacimiento" },
+  {
+    header: "Fecha Nacimiento",
+    accessorKey: "fecha_nacimiento",
+    cell: info => formatDate(info.getValue() as string)
+  },
   { header: "Género", accessorKey: "genero" },
   { header: "Email", accessorKey: "email" },
   { header: "Teléfono", accessorKey: "telefono" },
   { header: "País", accessorKey: "pais" },
   { header: "Ciudad", accessorKey: "ciudad" },
   { header: "Profesión", accessorKey: "profesion" },
-  { header: "Salario", accessorKey: "salario" },
-  { header: "Fecha Registro", accessorKey: "fecha_registro" },
+  {
+    header: "Salario",
+    accessorKey: "salario",
+    cell: info => `$ ${formatCurrency(Number(info.getValue()))}`
+  },
+  {
+    header: "Fecha Registro",
+    accessorKey: "fecha_registro",
+    cell: info => formatDate(info.getValue() as string)
+  },
 ];
 
 export default function Home() {
-  const loadDataset = useLoadDataset<Person>();
+  const useLoadDatasetClientes = useLoadDataset<Person>();
 
   useEffect(() => {
-    loadDataset.execute("dataset");
-  }, [loadDataset.execute]);
+    useLoadDatasetClientes.execute("dataset");
+  }, [useLoadDatasetClientes.execute]);
 
   return (
-    <>
-      {loadDataset.isLoading ? (
-        <p>Cargando datos...</p>
-      ) : (
-        <DataTable
-          title="Listado de clientes"
-          data={loadDataset.data}
-          error={loadDataset.error}
-          columns={columns}
-        />
-      )}
-    </>
+    <DataTable
+      title="Listado de clientes"
+      data={useLoadDatasetClientes.data}
+      isLoading={useLoadDatasetClientes.isLoading}
+      error={useLoadDatasetClientes.error}
+      columns={columns}
+    />
   );
 }

@@ -2,7 +2,19 @@ import { useState } from "react";
 import DataTableHead from "./DataTableHead";
 import DataTableBody from "./DataTableBody";
 import DataTablePagination from "./DataTablePagination";
-import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, type ColumnDef, type SortingState, type PaginationState } from "@tanstack/react-table";
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    getPaginationRowModel,
+    getGroupedRowModel,
+    getExpandedRowModel,
+    type ColumnDef,
+    type SortingState,
+    type PaginationState,
+    type GroupingState,
+    type ExpandedState
+} from "@tanstack/react-table";
 
 interface DataTableProps<T> {
     columns: ColumnDef<T>[];
@@ -10,6 +22,7 @@ interface DataTableProps<T> {
     title?: string;
     pageSizeOptions?: number[];
     defaultPageSize?: number;
+    isLoading?: boolean;
     error?: string | null;
     emptyMessage?: string;
 }
@@ -20,10 +33,13 @@ export default function DataTable<T extends object>({
     title,
     pageSizeOptions = [10, 20, 30, 40, 50],
     defaultPageSize = 10,
+    isLoading,
     error,
     emptyMessage = "No se encontraron datos.",
 }: DataTableProps<T>) {
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [grouping, setGrouping] = useState<GroupingState>([]);
+    const [expanded, setExpanded] = useState<ExpandedState>({});
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: defaultPageSize,
@@ -35,43 +51,44 @@ export default function DataTable<T extends object>({
         state: {
             sorting,
             pagination,
+            grouping,
+            expanded,
         },
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
+        onGroupingChange: setGrouping,
+        onExpandedChange: setExpanded,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getGroupedRowModel: getGroupedRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
     });
 
-    const renderContent = () => {
-        if (error) {
-            return <p>{error}</p>;
-        }
+    const isDataLoaded = !isLoading && !error && table.getRowModel().rows.length > 0;
 
-        if (table.getRowModel().rows.length === 0) {
-            return <p>{emptyMessage}</p>;
-        }
+    return (
+        <div className="data-table-wrapper">
+            {title && <h2 className="data-table-title">{title}</h2>}
 
-        return (
-            <>
-                <table>
-                    {title && <caption>{title}</caption>}
+            <div className="data-table-container">
+                <table className="data-table">
                     <DataTableHead table={table} />
-                    <DataTableBody table={table} />
+                    <DataTableBody
+                        table={table}
+                        isLoading={isLoading}
+                        error={error}
+                        emptyMessage={emptyMessage}
+                    />
                 </table>
+            </div>
+
+            {isDataLoaded && (
                 <DataTablePagination
                     table={table}
                     pageSizeOptions={pageSizeOptions}
                 />
-            </>
-        );
-    }
-
-    return (
-        <div>
-            {(!error && table.getRowModel().rows.length === 0 && title) && <h2>{title}</h2>}
-            {error && title && <h2>{title}</h2>}
-            {renderContent()}
+            )}
         </div>
     );
 }

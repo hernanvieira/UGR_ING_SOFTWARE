@@ -16,27 +16,31 @@ export default function DataTablePagination<T>({ table, pageSizeOptions }: DataT
     const isMultiPage = pageCount > 1;
 
     return (
-        <div>
-            <div>
+        <div className="pagination-container">
+            <div className="pagination-nav">
                 <button
+                    className="btn-pagination"
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <IconChevronsLeft size={20} />
                 </button>
                 <button
+                    className="btn-pagination"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <IconChevronLeft size={20} />
                 </button>
                 <button
+                    className="btn-pagination"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     <IconChevronRight size={20} />
                 </button>
                 <button
+                    className="btn-pagination"
                     onClick={() => table.setPageIndex(pageCount - 1)}
                     disabled={!table.getCanNextPage()}
                 >
@@ -44,15 +48,15 @@ export default function DataTablePagination<T>({ table, pageSizeOptions }: DataT
                 </button>
             </div>
 
-            <div>
+            <div className="pagination-info">
                 <span>
                     Página <strong>{table.getState().pagination.pageIndex + 1}</strong> de{' '}
                     <strong>{pageCount}</strong>
                 </span>
 
                 {isMultiPage && (
-                    <>
-                        <span>
+                    <div className="pagination-jump">
+                        <span className="pagination-jump">
                             | Ir a la página:
                             <input
                                 type="number"
@@ -61,6 +65,7 @@ export default function DataTablePagination<T>({ table, pageSizeOptions }: DataT
                                     const page = e.target.value ? Number(e.target.value) - 1 : 0;
                                     table.setPageIndex(page);
                                 }}
+                                className="pagination-input"
                             />
                         </span>
                         <select
@@ -68,6 +73,7 @@ export default function DataTablePagination<T>({ table, pageSizeOptions }: DataT
                             onChange={e => {
                                 table.setPageSize(Number(e.target.value));
                             }}
+                            className="pagination-select"
                         >
                             {pageSizeOptions.map(pageSize => (
                                 <option key={pageSize} value={pageSize}>
@@ -75,7 +81,7 @@ export default function DataTablePagination<T>({ table, pageSizeOptions }: DataT
                                 </option>
                             ))}
                         </select>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
