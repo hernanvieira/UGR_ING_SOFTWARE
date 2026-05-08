@@ -7,18 +7,31 @@ import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowMode
 interface DataTableProps<T> {
     columns: ColumnDef<T>[];
     data: T[];
+    title?: string;
+    pageSizeOptions?: number[];
+    defaultPageSize?: number;
+    error?: string | null;
+    emptyMessage?: string;
 }
 
-export default function DataTable<T extends object>(props: DataTableProps<T>) {
+export default function DataTable<T extends object>({
+    columns,
+    data,
+    title,
+    pageSizeOptions = [10, 20, 30, 40, 50],
+    defaultPageSize = 10,
+    error,
+    emptyMessage = "No se encontraron datos.",
+}: DataTableProps<T>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 10,
+        pageSize: defaultPageSize,
     });
 
     const table = useReactTable({
-        data: props.data,
-        columns: props.columns,
+        data,
+        columns,
         state: {
             sorting,
             pagination,
@@ -30,13 +43,35 @@ export default function DataTable<T extends object>(props: DataTableProps<T>) {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    const renderContent = () => {
+        if (error) {
+            return <p>{error}</p>;
+        }
+
+        if (table.getRowModel().rows.length === 0) {
+            return <p>{emptyMessage}</p>;
+        }
+
+        return (
+            <>
+                <table>
+                    {title && <caption>{title}</caption>}
+                    <DataTableHead table={table} />
+                    <DataTableBody table={table} />
+                </table>
+                <DataTablePagination
+                    table={table}
+                    pageSizeOptions={pageSizeOptions}
+                />
+            </>
+        );
+    }
+
     return (
         <div>
-            <table>
-                <DataTableHead table={table} />
-                <DataTableBody table={table} />
-            </table>
-            <DataTablePagination table={table} />
+            {(!error && table.getRowModel().rows.length === 0 && title) && <h2>{title}</h2>}
+            {error && title && <h2>{title}</h2>}
+            {renderContent()}
         </div>
     );
 }

@@ -9,9 +9,9 @@ export default function DataTableBody<T>(props: DataTableBodyProps<T>) {
         <tbody>
             {props.table.getRowModel().rows.map((row, index) => (
                 <tr key={row.id}>
-                    {row.getVisibleCells().map((cell, index) => (
+                    {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
-                            <span>{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                     ))}
                 </tr>

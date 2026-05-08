@@ -1,41 +1,65 @@
 import type { Route } from "./+types/home";
 import DataTable from "~/features/shared/ui/table/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
+import useLoadDataset from "~/features/shared/hooks/useLoadDataset";
+import { useEffect } from "react";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Dataset Explorer" },
+    { name: "description", content: "Exploring the Person dataset" },
   ];
 }
 
 interface Person {
   id: number;
-  name: string;
-  age: number;
+  nombres: string;
+  apellidos: string;
+  fecha_nacimiento: string;
+  genero: string;
   email: string;
-  phone: string;
-  address: string;
+  telefono: string;
+  pais: string;
+  ciudad: string;
+  profesion: string;
+  salario: number;
+  fecha_registro: string;
 }
-
-const persons: Person[] = [
-  { id: 1, name: "Juan", age: 30, email: "[EMAIL_ADDRESS]", phone: "123456789", address: "123 Main St" },
-  { id: 2, name: "Maria", age: 25, email: "[EMAIL_ADDRESS]", phone: "987654321", address: "456 Elm St" },
-  { id: 3, name: "Pedro", age: 35, email: "[EMAIL_ADDRESS]", phone: "555555555", address: "789 Oak St" },
-];
 
 const columns: ColumnDef<Person>[] = [
   { header: "ID", accessorKey: "id" },
-  { header: "Name", accessorKey: "name" },
-  { header: "Age", accessorKey: "age" },
+  { header: "Nombres", accessorKey: "nombres" },
+  { header: "Apellidos", accessorKey: "apellidos" },
+  { header: "Fecha Nacimiento", accessorKey: "fecha_nacimiento" },
+  { header: "Género", accessorKey: "genero" },
   { header: "Email", accessorKey: "email" },
-  { header: "Phone", accessorKey: "phone" },
-  { header: "Address", accessorKey: "address" },
+  { header: "Teléfono", accessorKey: "telefono" },
+  { header: "País", accessorKey: "pais" },
+  { header: "Ciudad", accessorKey: "ciudad" },
+  { header: "Profesión", accessorKey: "profesion" },
+  { header: "Salario", accessorKey: "salario" },
+  { header: "Fecha Registro", accessorKey: "fecha_registro" },
 ];
 
 export default function Home() {
-  return <DataTable
-    data={persons}
-    columns={columns}
-  />
+  const loadDataset = useLoadDataset<Person>();
+
+  useEffect(() => {
+    loadDataset.execute("dataset");
+  }, [loadDataset.execute]);
+
+  return (
+    <>
+      {loadDataset.isLoading ? (
+        <p>Cargando datos...</p>
+      ) : (
+        <DataTable
+          title="Listado de clientes"
+          data={loadDataset.data}
+          error={loadDataset.error}
+          columns={columns}
+        />
+      )}
+    </>
+  );
 }
