@@ -1,0 +1,6 @@
+id,nombres,apellidos,fecha_nacimiento,genero,email,telefono,pais,ciudad,profesion,salario,fecha_registro
+1,Juan,Perez,1990-05-15,Masculino,juan.perez@example.com,+573123456789,Colombia,Bogota,Ingeniero de Software,1500000,2024-01-15
+2,Maria,Garcia,1985-11-20,Femenino,maria.garcia@example.com,+573134567890,Colombia,Medellin,Diseñadora Gráfica,1200000,2024-01-20
+3,Carlos,Rodriguez,1992-03-10,Masculino,carlos.rodriguez@example.com,+573145678901,Colombia,Cali,Desarrollador Web,1400000,2024-01-25
+4,Ana,Martinez,1988-07-25,Femenino,ana.martinez@example.com,+573156789012,Colombia,Barranquilla,Analista de Datos,1600000,2024-01-30
+5,Luis,Hernandez,1995-09-12,Masculino,luis.hernandez@example.com,+573167890123,Colombia,Cucuta,Desarrollador de Software,1550000,2024-02-05

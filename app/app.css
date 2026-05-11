@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* Definiciones Raíz */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-spin-slow {
+  animation: spin 1.5s linear infinite;
+}
+
+@utility animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply p-6 md:p-10 min-h-screen bg-white text-gray-900 transition-colors duration-300;
+    @apply dark:bg-gray-950 dark:text-gray-100;
+  }
+}
+
+@layer components {
+
+  /* Paginación */
+  .btn-pagination {
+    @apply p-1 rounded-md transition-colors text-gray-700 hover:bg-gray-100;
+    @apply dark:text-gray-300 dark:hover:bg-gray-800;
+  }
+
+  .btn-pagination:disabled {
+    @apply text-gray-300 cursor-not-allowed opacity-50 dark:text-gray-600;
+  }
+
+  .pagination-container {
+    @apply flex flex-col md:flex-row items-center justify-start py-4 gap-8;
+  }
+
+  .pagination-nav {
+    @apply flex items-center gap-1;
+  }
+
+  .pagination-info {
+    @apply flex items-center gap-6 text-sm text-gray-700 dark:text-gray-400;
+  }
+
+  .pagination-input {
+    @apply w-12 p-1 border rounded-md text-center bg-transparent border-gray-200 dark:border-gray-700;
+  }
+
+  .pagination-select {
+    @apply p-1 border rounded-md bg-transparent border-gray-200 dark:border-gray-700;
+  }
+
+  /* Tabla */
+  .data-table-title {
+    @apply text-xl font-bold p-4 text-left text-gray-800 dark:text-gray-100;
+  }
+
+  .data-table-container {
+    @apply w-full mt-2 mb-0 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm;
+    @apply overflow-x-auto overflow-y-auto;
+    max-height: 600px;
+  }
+
+  .data-table {
+    @apply min-w-full text-left border-collapse;
+    table-layout: auto;
+  }
+
+  .data-table thead th {
+    @apply p-3 border-b bg-gray-50 font-semibold text-gray-700 text-sm dark:bg-gray-900 dark:text-gray-300 dark:border-gray-800;
+    @apply sticky top-0 z-10;
+  }
+
+  /* Estados */
+  .data-table-status-row {
+    height: 100px;
+    @apply relative;
+  }
+
+  .data-table-status-container {
+    @apply absolute inset-0 flex items-center justify-center gap-2;
+  }
+
+  .data-table-loading {
+    @apply text-blue-600 font-medium dark:text-blue-400;
+  }
+
+  .data-table-error {
+    @apply text-red-600 font-medium dark:text-red-400;
+  }
+
+  .data-table-empty {
+    @apply text-gray-500 italic dark:text-gray-400;
+  }
+
+  /* Agrupamiento */
+  .data-table-group-row {
+    @apply bg-gray-100 dark:bg-gray-900 font-bold cursor-pointer transition-colors hover:bg-gray-200 dark:hover:bg-gray-800;
+    @apply sticky z-20;
+  }
+
+  .group-row-content {
+    @apply flex items-center gap-2;
+  }
+
+  .group-row-icon {
+    @apply opacity-70 flex items-center;
+  }
+
+  .group-row-label {
+    @apply text-[10px] uppercase font-bold tracking-wider opacity-40;
+  }
+
+  .group-row-value {
+    @apply text-blue-600 dark:text-blue-400 font-semibold;
+  }
+
+  .group-row-count {
+    @apply text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-200/50 dark:bg-gray-800/50 opacity-70;
+  }
+
+  .btn-group-toggle {
+    @apply p-1 rounded-full text-gray-400 hover:text-blue-600 transition-colors;
+  }
+
+  .btn-group-toggle-active {
+    @apply text-blue-600 bg-blue-50 dark:bg-blue-900/30;
+  }
+
+  /* Orden y Celdas */
+  .sortable-header {
+    @apply flex items-center justify-between gap-2 cursor-pointer select-none hover:text-gray-900 dark:hover:text-white transition-colors;
+  }
+
+  .sort-indicator {
+    @apply flex items-center text-gray-400 dark:text-gray-600;
+  }
+
+  .sort-indicator-active {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+
+  .data-table tbody td {
+    @apply p-3 border-b text-sm text-gray-600 dark:text-gray-400 dark:border-gray-800;
+    white-space: nowrap;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-gray-50 dark:bg-gray-900/50 transition-colors;
+  }
+
+  .data-table-row {
+    @apply animate-fade-in;
+  }
+}
