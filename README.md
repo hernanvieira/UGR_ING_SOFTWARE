@@ -1,6 +1,6 @@
 # ChurnGuard
 
-Proyecto de Ingeniería de Software — Universidad de Granada (UGR).
+Proyecto de Ingeniería de Software — Universidad del Gran Rosario (UGR).
 
 Aplicación web para análisis y predicción de churn (abandono de clientes), construida con React, Vite y Tailwind CSS.
 
