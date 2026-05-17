@@ -12,13 +12,15 @@ const VIEWS = [
   {
     key: 'dashboard',
     label: 'Dashboard ejecutivo',
+    description: 'Vista general de métricas clave de abandono. Para dirección y líderes de área.',
     component: Dashboard,
   },
   {
     key: 'prediccion',
-    label: 'Predicción individual',
+    label: 'Predicción por industrias',
     badge: 'Soporte / Ejecutivos de cuenta',
     badgeStyle: { background: '#eff6ff', color: '#1d4ed8' },
+    description: 'Análisis detallado de riesgo para un segmento específico. Para ejecutivos de cuenta antes de intervenir en un sector.',
     component: PrediccionIndividual,
   },
   {
@@ -26,6 +28,7 @@ const VIEWS = [
     label: 'Clientes en riesgo',
     badge: 'Soporte · Marketing',
     badgeStyle: { background: '#fffbeb', color: '#b45309' },
+    description: 'Listado de clientes ordenados por probabilidad de abandono con filtros. Para soporte y marketing al priorizar intervenciones.',
     component: ClientesEnRiesgo,
   },
   {
@@ -33,13 +36,15 @@ const VIEWS = [
     label: 'Detalle cliente',
     badge: 'Soporte · Ejecutivos de cuenta',
     badgeStyle: { background: '#EEEDFE', color: '#3C3489' },
+    description: 'Perfil completo de un cliente: puntaje de riesgo, factores y acciones recomendadas. Se accede desde Clientes en riesgo.',
     component: DetalleCliente,
   },
   {
     key: 'scoring',
-    label: 'Scoring masivo',
+    label: 'Evaluación masiva',
     badge: 'Desarrollo · Dirección',
     badgeStyle: { background: '#E1F5EE', color: '#0F6E56' },
+    description: 'Procesamiento masivo para obtener el puntaje de abandono de toda la base de clientes. Para equipos técnicos y dirección.',
     component: ScoringMasivo,
   },
   {
@@ -47,6 +52,7 @@ const VIEWS = [
     label: 'Campañas de retención',
     badge: 'Marketing',
     badgeStyle: { background: '#FAECE7', color: '#993C1D' },
+    description: 'Gestión de campañas segmentadas por industria, plan y nivel de riesgo. Para el equipo de marketing.',
     component: CampanasRetencion,
   },
   {
@@ -54,6 +60,7 @@ const VIEWS = [
     label: 'Análisis de producto',
     badge: 'Área de desarrollo',
     badgeStyle: { background: '#EEEDFE', color: '#3C3489' },
+    description: 'Variables del producto asociadas a la retención o al abandono según el modelo. Para el equipo de desarrollo.',
     component: AnalisisFeatures,
   },
 ]
@@ -61,12 +68,14 @@ const VIEWS = [
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [navData, setNavData] = useState(null)
 
   const activeView = VIEWS.find((v) => v.key === currentView) || VIEWS[0]
   const PageComponent = activeView.component
 
-  function navigate(key) {
+  function navigate(key, data = null) {
     setCurrentView(key)
+    setNavData(data)
     setSidebarOpen(false)
   }
 
@@ -119,6 +128,27 @@ export default function App() {
             <h1 className="text-sm sm:text-base font-semibold text-slate-800 leading-tight truncate">
               {activeView.label}
             </h1>
+            {activeView.description && (
+              <div className="relative group flex-shrink-0">
+                <span
+                  className="w-4 h-4 rounded-full flex items-center justify-center cursor-default select-none font-semibold"
+                  style={{ background: 'rgba(15,23,42,0.06)', color: '#94a3b8', fontSize: 10 }}
+                >
+                  i
+                </span>
+                <div
+                  className="absolute left-0 top-6 hidden group-hover:block pointer-events-none"
+                  style={{ width: 240, zIndex: 9999 }}
+                >
+                  <div
+                    className="rounded-xl p-3 text-xs leading-relaxed shadow-xl"
+                    style={{ background: '#1e2235', color: 'rgba(255,255,255,0.72)' }}
+                  >
+                    {activeView.description}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           {activeView.badge && (
             <span
@@ -132,7 +162,7 @@ export default function App() {
 
         {/* Contenido scrolleable */}
         <main className="flex-1 overflow-y-auto" style={{ background: '#f8fafc' }}>
-          <PageComponent onNavigate={navigate} />
+          <PageComponent onNavigate={navigate} navData={navData} />
         </main>
       </div>
     </div>

@@ -1,0 +1,8 @@
+name,description,segment,industry_target,plan_target,risk_level_target,clients_targeted,clients_retained,mrr_saved_usd,start_date,end_date,status,owner,progress_pct
+Rescate DevTools,Intervención urgente en industria con mayor churn,DevTools — Alto riesgo,DevTools,Todos,Alto,47,18,21400,2024-11-01,,Activa,Ana M.,62
+Follow-up FinTech,Seguimiento personalizado sector financiero,FinTech — Riesgo medio/alto,FinTech,Todos,Moderado,38,12,14800,2024-11-15,,Activa,Juan P.,48
+Rescate Pro Enterprise,Retención de cuentas Enterprise en riesgo,Enterprise — Alto riesgo,Todos,Enterprise,Alto,34,14,28600,2024-10-20,,Activa,Laura S.,73
+Bono Fidelidad Q1,Descuento por permanencia para clientes con buen perfil,Riesgo bajo — Todos,Todos,Todos,Bajo,120,0,0,2025-01-15,,Programada,Ana M.,0
+Win-back HealthTech,Reactivar cuentas HealthTech con bajo engagement,HealthTech — Moderado,HealthTech,Todos,Moderado,42,9,8200,2024-12-01,2024-12-31,Finalizada,Juan P.,100
+Capacitación EdTech,Onboarding extendido para reducir churn temprano,EdTech — Nuevo,EdTech,Basic,Bajo,28,0,0,2025-02-01,,Programada,Laura S.,0
+Soporte Prioritario,Canal dedicado para clientes con tickets elevados,Clientes con >6 tickets,Todos,Todos,Alto,63,21,18900,2024-10-01,2024-12-31,Finalizada,Ana M.,100

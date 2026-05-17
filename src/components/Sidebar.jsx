@@ -1,9 +1,9 @@
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard ejecutivo', icon: '◈' },
-  { key: 'prediccion', label: 'Predicción individual', icon: '◎' },
+  { key: 'prediccion', label: 'Predicción por industrias', icon: '◎' },
   { key: 'clientes', label: 'Clientes en riesgo', icon: '◉' },
   { key: 'detalle', label: 'Detalle cliente', icon: '◐' },
-  { key: 'scoring', label: 'Scoring masivo', icon: '◧' },
+  { key: 'scoring', label: 'Evaluación masiva', icon: '◧' },
   { key: 'campanas', label: 'Campañas', icon: '◆' },
   { key: 'analisis', label: 'Análisis de producto', icon: '◑' },
 ]

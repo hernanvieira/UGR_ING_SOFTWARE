@@ -1,0 +1,11 @@
+feature_id,display_name,category,importance_rf,churn_avg,active_avg,delta_pct
+avg_satisfaccion,Satisfacción del cliente,retention,0.18,2.89,4.12,+43
+features_distintas,Funcionalidades utilizadas,retention,0.15,22.1,29.8,+35
+auto_renew_pct,Auto-renovación activa,retention,0.14,0.71,0.83,+17
+total_tickets,Tickets de soporte,churn,0.13,5.8,3.2,-45
+avg_resolucion_hrs,Tiempo de resolución,churn,0.11,48.2,28.9,-40
+tenure_days,Antigüedad del cliente,retention,0.10,372,330,+13
+total_errores,Errores técnicos,neutral,0.09,28.2,28.1,0
+avg_mrr,MRR promedio,neutral,0.08,2083,2315,-10
+pct_beta,Uso de features beta,churn,0.07,0.065,0.071,+9
+upgrade_ever,Historial de upgrade,retention,0.06,0.41,0.48,+17
