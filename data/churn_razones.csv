@@ -1,0 +1,7 @@
+reason_code,display_name,count,pct,avg_refund_usd,trend
+pricing,Precio / costo,162,27.0,38.4,up
+missing_features,Funcionalidades faltantes,144,24.0,12.1,stable
+budget,Restricción presupuestaria,126,21.0,5.8,up
+support,Calidad del soporte,90,15.0,62.3,down
+competitor,Migración a competidor,54,9.0,18.7,stable
+other,Otros motivos,24,4.0,8.2,stable
