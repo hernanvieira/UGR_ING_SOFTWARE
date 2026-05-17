@@ -12,8 +12,6 @@ const VIEWS = [
   {
     key: 'dashboard',
     label: 'Dashboard ejecutivo',
-    badge: 'Mayo 2024',
-    badgeStyle: { background: '#f1f5f9', color: '#64748b' },
     component: Dashboard,
   },
   {
@@ -62,34 +60,69 @@ const VIEWS = [
 
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const activeView = VIEWS.find((v) => v.key === currentView) || VIEWS[0]
   const PageComponent = activeView.component
 
+  function navigate(key) {
+    setCurrentView(key)
+    setSidebarOpen(false)
+  }
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar fijo a la izquierda */}
-      <Sidebar activeKey={currentView} onNavigate={setCurrentView} />
+
+      {/* Backdrop mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar: overlay en mobile, estático en desktop */}
+      <div
+        className={`
+          fixed inset-y-0 left-0 z-30 flex-shrink-0
+          transition-transform duration-200
+          md:relative md:translate-x-0
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <Sidebar activeKey={currentView} onNavigate={navigate} />
+      </div>
 
       {/* Área principal */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Header discreto */}
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+
+        {/* Header */}
         <header
-          className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 py-3 border-b flex-shrink-0"
           style={{
             background: 'rgba(255,255,255,0.92)',
             backdropFilter: 'blur(8px)',
             borderColor: 'rgba(15,23,42,0.08)',
           }}
         >
-          <div>
-            <h1 className="text-base font-semibold text-slate-800 leading-tight">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Hamburguesa — solo mobile */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden flex-shrink-0 p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+              aria-label="Abrir menú"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </button>
+            <h1 className="text-sm sm:text-base font-semibold text-slate-800 leading-tight truncate">
               {activeView.label}
             </h1>
           </div>
           {activeView.badge && (
             <span
-              className="text-xs px-2.5 py-1 rounded-full"
+              className="hidden sm:inline text-xs px-2.5 py-1 rounded-full flex-shrink-0 ml-3"
               style={activeView.badgeStyle}
             >
               {activeView.badge}
@@ -99,7 +132,7 @@ export default function App() {
 
         {/* Contenido scrolleable */}
         <main className="flex-1 overflow-y-auto" style={{ background: '#f8fafc' }}>
-          <PageComponent onNavigate={setCurrentView} />
+          <PageComponent onNavigate={navigate} />
         </main>
       </div>
     </div>
