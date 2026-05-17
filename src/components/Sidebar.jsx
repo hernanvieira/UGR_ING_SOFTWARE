@@ -27,7 +27,7 @@ export default function Sidebar({ activeKey, onNavigate }) {
         <div>
           <div className="text-white font-semibold text-sm leading-none">ChurnGuard</div>
           <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Grupo 4 · IS
+            RavenStack
           </div>
         </div>
       </div>
