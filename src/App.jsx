@@ -7,6 +7,7 @@ import DetalleCliente from './pages/DetalleCliente'
 import ScoringMasivo from './pages/ScoringMasivo'
 import CampanasRetencion from './pages/CampanasRetencion'
 import AnalisisFeatures from './pages/AnalisisFeatures'
+import SimuladorPrediccion from './pages/SimuladorPrediccion'
 
 const VIEWS = [
   {
@@ -62,6 +63,14 @@ const VIEWS = [
     badgeStyle: { background: '#EEEDFE', color: '#3C3489' },
     description: 'Variables del producto asociadas a la retención o al abandono según el modelo. Para el equipo de desarrollo.',
     component: AnalisisFeatures,
+  },
+  {
+    key: 'simulador',
+    label: 'Simulador de predicción',
+    badge: 'Soporte · Ejecutivos de cuenta',
+    badgeStyle: { background: '#eff6ff', color: '#1d4ed8' },
+    description: 'Ingresá los datos de un cliente y obtené su probabilidad de churn según tres modelos (Árbol, KNN, Random Forest). Para ejecutivos de cuenta.',
+    component: SimuladorPrediccion,
   },
 ]
 

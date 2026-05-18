@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { key: 'scoring', label: 'Evaluación masiva', icon: '◧' },
   { key: 'campanas', label: 'Campañas', icon: '◆' },
   { key: 'analisis', label: 'Análisis de producto', icon: '◑' },
+  { key: 'simulador', label: 'Simulador de predicción', icon: '◈' },
 ]
 
 export default function Sidebar({ activeKey, onNavigate }) {
