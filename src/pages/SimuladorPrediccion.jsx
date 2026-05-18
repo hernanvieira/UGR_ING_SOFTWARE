@@ -59,6 +59,41 @@ function predecirRF(dtProba, knnProba) {
   return { clase: amplified >= 0.3 ? 1 : 0, proba: amplified }
 }
 
+// ── Factores de riesgo — config display ──────────────────────────────────
+const FACTORES_CONFIG = [
+  { key: 'total_tickets',     label: 'Total tickets de soporte',       avg: 4,    max: 20,   dir: 'higher', fmt: v => `${v}`,                       sub: v => `promedio ${v}` },
+  { key: 'avg_resolucion_hrs',label: 'Tiempo de resolución (hs)',       avg: 36,   max: 120,  dir: 'higher', fmt: v => `${v} hs`,                     sub: v => `promedio ${v} hs` },
+  { key: 'avg_satisfaccion',  label: 'Satisfacción',                    avg: 3.7,  max: 5,    dir: 'lower',  fmt: v => `${v}/5`,                      sub: v => `promedio ${v}` },
+  { key: 'total_errores',     label: 'Errores registrados',             avg: 28,   max: 80,   dir: 'higher', fmt: v => `${v}`,                        sub: v => `promedio ${v}` },
+  { key: 'pct_beta',          label: 'Uso en funcionalidades beta',     avg: 0.104,max: 1,    dir: 'higher', fmt: v => `${Math.round(v*100)}%`,       sub: v => `promedio ${Math.round(v*100)}%` },
+  { key: 'auto_renew_pct',    label: 'Auto-renovación',                 avg: 0.8,  max: 1,    dir: 'lower',  fmt: v => `${Math.round(v*100)}% activo`,sub: () => 'mayor = menor riesgo' },
+  { key: 'avg_mrr',           label: 'MRR (determina rama árbol)',      avg: 2200, max: 5000, dir: 'struct', fmt: v => `$${Number(v).toLocaleString()}`, sub: () => 'umbral $2,712' },
+]
+
+function factorColor(val, avg, dir) {
+  if (dir === 'struct') return '#94a3b8'
+  const worse = dir === 'higher' ? val > avg : val < avg
+  const big   = dir === 'higher' ? val > avg * 1.4 : val < avg * 0.7
+  return big ? '#E24B4A' : worse ? '#EF9F27' : '#639922'
+}
+
+function buildAcciones(form, rfNivel) {
+  const tickets = +form.total_tickets, resol = +form.avg_resolucion_hrs, sat = +form.avg_satisfaccion
+  const out = []
+  if (rfNivel === 'Alto')
+    out.push({ text: 'Contactar con oferta de retención esta semana', tipo: 'urgent' })
+  if (rfNivel !== 'Bajo')
+    out.push({ text: 'Programar check-in proactivo en los próximos 7 días', tipo: 'accion' })
+  if (tickets > 4)
+    out.push({ text: 'Revisar historial de soporte reciente', tipo: 'accion' })
+  if (resol > 48)
+    out.push({ text: 'Escalar tickets pendientes para resolución prioritaria', tipo: 'accion' })
+  if (sat < 3)
+    out.push({ text: 'Enviar encuesta de satisfacción y asignar account manager', tipo: 'accion' })
+  out.push({ text: 'Monitorear uso semanal durante 30 días', tipo: 'monitor' })
+  return out
+}
+
 // ── Defaults (medias globales del dataset) ────────────────────────────────
 const DEFAULTS = {
   seats: 20, tenure_days: 340, is_trial: 0, avg_mrr: 2200,
@@ -129,12 +164,6 @@ function GaugeSVG({ proba }) {
         strokeDasharray={`${filled} ${dash}`}
         style={{ transition: 'stroke-dasharray 0.7s cubic-bezier(0.34,1.2,0.64,1)' }}
       />
-      <line
-        x1={cx} y1={cy} x2={x} y2={y}
-        stroke="#0f172a" strokeWidth="2" strokeLinecap="round"
-        style={{ transition: 'x2 0.7s cubic-bezier(0.34,1.2,0.64,1), y2 0.7s cubic-bezier(0.34,1.2,0.64,1)' }}
-      />
-      <circle cx={cx} cy={cy} r="3" fill="#0f172a" />
       <text x={cx} y={cy - 6} textAnchor="middle" fontSize="13" fontWeight="700" fill="#0f172a">{pct}%</text>
     </svg>
   )
@@ -164,7 +193,7 @@ function GaugeInfoTooltip({ align = 'right' }) {
           <span><strong>Azul &lt; 22%</strong> — riesgo bajo. Fidelizar.</span>
         </div>
         <div className="border-t border-slate-600 pt-2 text-slate-300">
-          El arco y la aguja indican la probabilidad de que ese cliente cancele su suscripción.
+          El arco indica la probabilidad de que ese cliente cancele su suscripción.
         </div>
       </div>
     </div>
@@ -272,15 +301,15 @@ export default function SimuladorPrediccion({ navData }) {
         Ingresá los datos de un cliente para obtener su probabilidad de abandono según tres modelos.
       </p>
 
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* ── Formulario ─────────────────────────────────────────────── */}
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="min-w-0 space-y-4">
 
           {/* Contrato */}
           <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
             <div className="text-xs font-semibold text-slate-700 mb-2">Contrato</div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Plan">
                 <select className={INPUT_CLS} style={INPUT_ST} value={form.plan_tier} onChange={e => set('plan_tier', e.target.value)}>
                   {ENC.plan_tier.map(v => <option key={v}>{v}</option>)}
@@ -328,7 +357,7 @@ export default function SimuladorPrediccion({ navData }) {
           {/* Uso del producto */}
           <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
             <div className="text-xs font-semibold text-slate-700 mb-2">Uso del producto</div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Funcionalidades usadas">
                 <input type="number" className={INPUT_CLS} style={INPUT_ST} value={form.features_distintas} onChange={e => set('features_distintas', e.target.value)} />
               </Field>
@@ -347,7 +376,7 @@ export default function SimuladorPrediccion({ navData }) {
           {/* Soporte */}
           <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
             <div className="text-xs font-semibold text-slate-700 mb-2">Soporte</div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Tickets totales">
                 <input type="number" className={INPUT_CLS} style={INPUT_ST} value={form.total_tickets} onChange={e => set('total_tickets', e.target.value)} />
               </Field>
@@ -366,7 +395,7 @@ export default function SimuladorPrediccion({ navData }) {
           {/* Cuenta */}
           <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
             <div className="text-xs font-semibold text-slate-700 mb-2">Cuenta</div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Industria">
                 <select className={INPUT_CLS} style={INPUT_ST} value={form.industry} onChange={e => set('industry', e.target.value)}>
                   {ENC.industry.map(v => <option key={v}>{v}</option>)}
@@ -399,10 +428,11 @@ export default function SimuladorPrediccion({ navData }) {
             )}
             {loadingModel ? 'Cargando modelo…' : computing ? 'Calculando…' : 'Predecir churn'}
           </button>
+
         </div>
 
         {/* ── Panel de resultados ────────────────────────────────────── */}
-        <div className="w-full lg:w-[460px] flex-shrink-0 space-y-3">
+        <div className="min-w-0 space-y-3">
 
           {/* Resultado ensemble */}
           <div
@@ -460,9 +490,62 @@ export default function SimuladorPrediccion({ navData }) {
               Random Forest: blend ponderado Árbol (55%) + KNN (45%). Modelos entrenados con datos sintéticos.
             </div>
           </div>
+
+          {/* Factores de riesgo */}
+          {results && (
+            <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                Factores de riesgo (variables del modelo)
+              </div>
+              {FACTORES_CONFIG.map(fc => {
+                const val = +form[fc.key]
+                const color = factorColor(val, fc.avg, fc.dir)
+                const barPct = Math.min((val / fc.max) * 100, 100)
+                return (
+                  <div key={fc.key} className="mb-3 last:mb-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
+                        <span className="text-sm text-slate-700">{fc.label}</span>
+                      </div>
+                      <span className="text-sm text-slate-500 flex-shrink-0 ml-2">{fc.fmt(val)}</span>
+                    </div>
+                    <div className="bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${barPct}%`, background: color }} />
+                    </div>
+                    <div className="text-xs text-slate-400 mt-0.5">{fc.sub(fc.avg)}</div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Acciones recomendadas */}
+          {results && (
+            <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                Acciones recomendadas
+              </div>
+              {buildAcciones(form, rfNivel).map((a, i) => {
+                const isMonitor = a.tipo === 'monitor'
+                const isUrgent  = a.tipo === 'urgent'
+                return (
+                  <div key={i} className="flex items-start gap-2.5 py-2 border-b border-slate-100 last:border-0">
+                    <span className="mt-0.5 text-sm font-bold flex-shrink-0 w-4 text-center"
+                      style={{ color: isMonitor ? '#047857' : isUrgent ? '#be123c' : '#b45309' }}>
+                      {isMonitor ? '✓' : '–'}
+                    </span>
+                    <span className="text-sm text-slate-600 leading-snug">{a.text}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
       </div>
+
     </div>
   )
 }
