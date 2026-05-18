@@ -132,7 +132,7 @@ function GaugeSVG({ proba }) {
   const dash = 2 * Math.PI * r
   const filled = displayed * dash / 2
   return (
-    <svg viewBox="0 0 120 70" className="w-full" style={{ maxWidth: 160 }}>
+    <svg viewBox="0 0 120 70" className="w-full">
       <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`} fill="none" stroke="#e2e8f0" strokeWidth="8" />
       <path
         d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
@@ -154,12 +154,12 @@ function GaugeSVG({ proba }) {
 function GaugeSkeleton() {
   return (
     <div className="animate-pulse">
-      <div className="h-12 rounded-lg mx-auto mb-2.5" style={{ maxWidth: 160, background: '#f1f5f9' }} />
+      <div className="h-10 rounded-lg mb-2" style={{ background: '#f1f5f9' }} />
       <div className="flex justify-center mb-1">
-        <div className="h-5 w-16 rounded-full" style={{ background: '#f1f5f9' }} />
+        <div className="h-4 w-12 rounded-full" style={{ background: '#f1f5f9' }} />
       </div>
       <div className="flex justify-center">
-        <div className="h-3 w-20 rounded-full" style={{ background: '#f1f5f9' }} />
+        <div className="h-3 w-14 rounded-full" style={{ background: '#f1f5f9' }} />
       </div>
     </div>
   )
@@ -201,7 +201,7 @@ function Field({ label, children }) {
   )
 }
 
-const INPUT_CLS = "w-full text-sm px-2.5 py-1.5 rounded-lg border text-slate-800 bg-white"
+const INPUT_CLS = "w-full text-xs px-2 py-1.5 rounded-lg border text-slate-800 bg-white"
 const INPUT_ST  = { borderColor: 'rgba(15,23,42,0.12)' }
 
 export default function SimuladorPrediccion({ navData }) {
@@ -255,9 +255,9 @@ export default function SimuladorPrediccion({ navData }) {
         <div className="flex-1 min-w-0 space-y-4">
 
           {/* Contrato */}
-          <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-            <div className="text-xs font-semibold text-slate-700 mb-3">Contrato</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+            <div className="text-xs font-semibold text-slate-700 mb-2">Contrato</div>
+            <div className="grid grid-cols-3 gap-2">
               <Field label="Plan">
                 <select className={INPUT_CLS} style={INPUT_ST} value={form.plan_tier} onChange={e => set('plan_tier', e.target.value)}>
                   {ENC.plan_tier.map(v => <option key={v}>{v}</option>)}
@@ -303,9 +303,9 @@ export default function SimuladorPrediccion({ navData }) {
           </div>
 
           {/* Uso del producto */}
-          <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-            <div className="text-xs font-semibold text-slate-700 mb-3">Uso del producto</div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+            <div className="text-xs font-semibold text-slate-700 mb-2">Uso del producto</div>
+            <div className="grid grid-cols-4 gap-2">
               <Field label="Funcionalidades usadas">
                 <input type="number" className={INPUT_CLS} style={INPUT_ST} value={form.features_distintas} onChange={e => set('features_distintas', e.target.value)} />
               </Field>
@@ -322,9 +322,9 @@ export default function SimuladorPrediccion({ navData }) {
           </div>
 
           {/* Soporte */}
-          <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-            <div className="text-xs font-semibold text-slate-700 mb-3">Soporte</div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+            <div className="text-xs font-semibold text-slate-700 mb-2">Soporte</div>
+            <div className="grid grid-cols-4 gap-2">
               <Field label="Tickets totales">
                 <input type="number" className={INPUT_CLS} style={INPUT_ST} value={form.total_tickets} onChange={e => set('total_tickets', e.target.value)} />
               </Field>
@@ -341,9 +341,9 @@ export default function SimuladorPrediccion({ navData }) {
           </div>
 
           {/* Cuenta */}
-          <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-            <div className="text-xs font-semibold text-slate-700 mb-3">Cuenta</div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-xl border p-3" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+            <div className="text-xs font-semibold text-slate-700 mb-2">Cuenta</div>
+            <div className="grid grid-cols-3 gap-2">
               <Field label="Industria">
                 <select className={INPUT_CLS} style={INPUT_ST} value={form.industry} onChange={e => set('industry', e.target.value)}>
                   {ENC.industry.map(v => <option key={v}>{v}</option>)}
@@ -379,7 +379,7 @@ export default function SimuladorPrediccion({ navData }) {
         </div>
 
         {/* ── Panel de resultados ────────────────────────────────────── */}
-        <div className="w-full lg:w-64 flex-shrink-0 space-y-3">
+        <div className="w-full lg:w-[460px] flex-shrink-0 space-y-3">
 
           {/* Resultado ensemble */}
           <div
@@ -389,19 +389,19 @@ export default function SimuladorPrediccion({ navData }) {
             <div className="text-xs font-semibold text-slate-700 mb-3">Resultado final (ensemble)</div>
             {computing ? (
               <div className="animate-pulse py-2">
-                <div className="h-16 rounded-lg mx-auto mb-3" style={{ maxWidth: 160, background: '#f1f5f9' }} />
+                <div className="h-20 rounded-lg mx-auto mb-3" style={{ background: '#f1f5f9' }} />
                 <div className="flex justify-center mb-2">
                   <div className="h-6 w-24 rounded-full" style={{ background: '#f1f5f9' }} />
                 </div>
                 <div className="flex justify-center">
-                  <div className="h-3 w-36 rounded-full" style={{ background: '#f1f5f9' }} />
+                  <div className="h-3 w-48 rounded-full" style={{ background: '#f1f5f9' }} />
                 </div>
               </div>
             ) : !results ? (
-              <div className="text-sm text-slate-400 text-center py-6">Completá el formulario y presioná Predecir</div>
+              <div className="text-sm text-slate-400 text-center py-8">Completá el formulario y presioná Predecir</div>
             ) : (
               <>
-                <div className="flex justify-center mb-2">
+                <div className="mx-auto" style={{ maxWidth: 260 }}>
                   <GaugeSVG proba={results.rf.proba} />
                 </div>
                 <div className="flex justify-center mb-1">
@@ -421,15 +421,17 @@ export default function SimuladorPrediccion({ navData }) {
             )}
           </div>
 
-          {/* Los 3 modelos por separado */}
-          <ModelCard name="Árbol de decisión" result={results?.dt} loading={computing} />
-          <ModelCard name="KNN  (K = 14)" result={results?.knn} loading={computing} />
-          <ModelCard name="Random Forest (aprox.)" result={results?.rf} loading={computing} />
+          {/* Los 3 modelos en fila */}
+          <div className="grid grid-cols-3 gap-2">
+            <ModelCard name="Árbol de decisión" result={results?.dt} loading={computing} />
+            <ModelCard name="KNN  (K = 14)" result={results?.knn} loading={computing} />
+            <ModelCard name="Random Forest" result={results?.rf} loading={computing} />
+          </div>
 
           {/* Nota metodológica */}
           <div className="rounded-xl p-3" style={{ background: '#f8fafc', border: '1px solid rgba(15,23,42,0.06)' }}>
             <div className="text-xs text-slate-400 leading-relaxed">
-              El Random Forest es una aproximación calibrada que pondera Árbol (55%) + KNN (45%). Los modelos fueron entrenados con datos sintéticos.
+              Random Forest: blend ponderado Árbol (55%) + KNN (45%). Modelos entrenados con datos sintéticos.
             </div>
           </div>
         </div>
