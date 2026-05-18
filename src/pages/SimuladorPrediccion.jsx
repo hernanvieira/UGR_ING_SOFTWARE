@@ -15,31 +15,21 @@ const ENC = {
 // total_tickets, avg_resolucion_hrs, avg_satisfaccion, tasa_escalacion,
 // industry_enc, country_enc, referral_source_enc, plan_tier_enc
 
-// ── Decision Tree (exported via export_text from notebook) ────────────────
+// ── Decision Tree — probabilidades reales por hoja (predict_proba) ────────
+// Transcripción exacta del JS documentado por el compañero en celda 113
 function predecirArbol(r) {
-  let clase
   if (r.avg_mrr <= 2712.64) {
-    if (r.country_enc <= 0.5) {
-      clase = 0
-    } else {
-      if (r.features_distintas <= 22.5) {
-        clase = 0
-      } else {
-        clase = r.total_errores <= 16.5 ? 1 : 0
-      }
-    }
+    if (r.country_enc <= 0.5)       return { proba: 0.000 }
+    if (r.features_distintas <= 22.5)
+      return r.country_enc <= 3.5   ? { proba: 0.385 } : { proba: 0.050 }
+    return r.total_errores <= 16.5  ? { proba: 0.556 } : { proba: 0.280 }
   } else {
-    if (r.avg_resolucion_hrs <= 9.67) {
-      clase = r.pct_beta <= 0.03 ? 0 : 1
-    } else {
-      if (r.avg_satisfaccion <= 4.83) {
-        clase = r.total_errores <= 9.5 ? 1 : 0
-      } else {
-        clase = r.upgrade_ever <= 0.5 ? 1 : 0
-      }
-    }
+    if (r.avg_resolucion_hrs <= 9.67)
+      return r.pct_beta <= 0.03     ? { proba: 0.000 } : { proba: 1.000 }
+    if (r.avg_satisfaccion <= 4.83)
+      return r.total_errores <= 9.5 ? { proba: 1.000 } : { proba: 0.071 }
+    return r.upgrade_ever <= 0.5    ? { proba: 1.000 } : { proba: 0.000 }
   }
-  return { clase, proba: clase }
 }
 
 // ── KNN (K=14, distancia euclidiana sobre datos escalados) ────────────────
