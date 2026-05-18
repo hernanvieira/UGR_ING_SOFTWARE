@@ -114,8 +114,15 @@ const NIVEL_COLOR = { Alto: '#be123c', Moderado: '#b45309', Bajo: '#047857' }
 const NIVEL_BG    = { Alto: '#fff1f2', Moderado: '#fffbeb', Bajo: '#ecfdf5' }
 
 function GaugeSVG({ proba }) {
-  const pct = Math.round(proba * 100)
-  const angle = -90 + pct * 1.8
+  const [displayed, setDisplayed] = useState(0)
+  useEffect(() => {
+    setDisplayed(0)
+    const t = setTimeout(() => setDisplayed(proba), 40)
+    return () => clearTimeout(t)
+  }, [proba])
+
+  const pct = Math.round(displayed * 100)
+  const angle = -90 + displayed * 180
   const rad = angle * Math.PI / 180
   const r = 44
   const cx = 60, cy = 60
@@ -123,7 +130,7 @@ function GaugeSVG({ proba }) {
   const y = cy + r * Math.sin(rad)
   const color = proba >= 0.36 ? '#E24B4A' : proba >= 0.22 ? '#EF9F27' : '#378ADD'
   const dash = 2 * Math.PI * r
-  const filled = (pct / 100) * dash / 2
+  const filled = displayed * dash / 2
   return (
     <svg viewBox="0 0 120 70" className="w-full" style={{ maxWidth: 160 }}>
       <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`} fill="none" stroke="#e2e8f0" strokeWidth="8" />
@@ -131,11 +138,30 @@ function GaugeSVG({ proba }) {
         d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
         fill="none" stroke={color} strokeWidth="8"
         strokeDasharray={`${filled} ${dash}`}
+        style={{ transition: 'stroke-dasharray 0.7s cubic-bezier(0.34,1.2,0.64,1)' }}
       />
-      <line x1={cx} y1={cy} x2={x} y2={y} stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
+      <line
+        x1={cx} y1={cy} x2={x} y2={y}
+        stroke="#0f172a" strokeWidth="2" strokeLinecap="round"
+        style={{ transition: 'x2 0.7s cubic-bezier(0.34,1.2,0.64,1), y2 0.7s cubic-bezier(0.34,1.2,0.64,1)' }}
+      />
       <circle cx={cx} cy={cy} r="3" fill="#0f172a" />
       <text x={cx} y={cy - 6} textAnchor="middle" fontSize="13" fontWeight="700" fill="#0f172a">{pct}%</text>
     </svg>
+  )
+}
+
+function GaugeSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="h-12 rounded-lg mx-auto mb-2.5" style={{ maxWidth: 160, background: '#f1f5f9' }} />
+      <div className="flex justify-center mb-1">
+        <div className="h-5 w-16 rounded-full" style={{ background: '#f1f5f9' }} />
+      </div>
+      <div className="flex justify-center">
+        <div className="h-3 w-20 rounded-full" style={{ background: '#f1f5f9' }} />
+      </div>
+    </div>
   )
 }
 
@@ -144,7 +170,9 @@ function ModelCard({ name, result, loading }) {
   return (
     <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
       <div className="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider">{name}</div>
-      {loading || !result ? (
+      {loading ? (
+        <GaugeSkeleton />
+      ) : !result ? (
         <div className="text-sm text-slate-400 text-center py-4">—</div>
       ) : (
         <>
@@ -210,7 +238,7 @@ export default function SimuladorPrediccion({ navData }) {
       const rf  = predecirRF(dt.proba, knn.proba)
       setResults({ dt, knn, rf })
       setComputing(false)
-    }, 30)
+    }, 600)
   }
 
   const rfNivel = results ? nivel(results.rf.proba) : null
@@ -337,9 +365,15 @@ export default function SimuladorPrediccion({ navData }) {
           <button
             onClick={predecir}
             disabled={loadingModel || computing}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ background: '#4f6ef7' }}
           >
+            {computing && (
+              <svg className="animate-spin h-4 w-4 text-white flex-shrink-0" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            )}
             {loadingModel ? 'Cargando modelo…' : computing ? 'Calculando…' : 'Predecir churn'}
           </button>
         </div>
@@ -353,7 +387,17 @@ export default function SimuladorPrediccion({ navData }) {
             style={{ borderColor: results ? '#86efac' : 'rgba(15,23,42,0.08)' }}
           >
             <div className="text-xs font-semibold text-slate-700 mb-3">Resultado final (ensemble)</div>
-            {!results ? (
+            {computing ? (
+              <div className="animate-pulse py-2">
+                <div className="h-16 rounded-lg mx-auto mb-3" style={{ maxWidth: 160, background: '#f1f5f9' }} />
+                <div className="flex justify-center mb-2">
+                  <div className="h-6 w-24 rounded-full" style={{ background: '#f1f5f9' }} />
+                </div>
+                <div className="flex justify-center">
+                  <div className="h-3 w-36 rounded-full" style={{ background: '#f1f5f9' }} />
+                </div>
+              </div>
+            ) : !results ? (
               <div className="text-sm text-slate-400 text-center py-6">Completá el formulario y presioná Predecir</div>
             ) : (
               <>
