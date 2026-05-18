@@ -112,10 +112,9 @@ function GaugeSVG({ proba }) {
   }, [proba])
 
   const pct = Math.round(displayed * 100)
-  const angle = -90 + displayed * 180
-  const rad = angle * Math.PI / 180
   const r = 44
   const cx = 60, cy = 60
+  const rad = Math.PI * (1 + displayed)
   const x = cx + r * Math.cos(rad)
   const y = cy + r * Math.sin(rad)
   const color = proba >= 0.36 ? '#E24B4A' : proba >= 0.22 ? '#EF9F27' : '#378ADD'
@@ -141,6 +140,37 @@ function GaugeSVG({ proba }) {
   )
 }
 
+function GaugeInfoTooltip({ align = 'right' }) {
+  const box = align === 'left' ? 'left-0' : 'right-0'
+  return (
+    <div className="relative group flex items-center">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"
+        className="text-slate-300 hover:text-slate-400 transition-colors cursor-default flex-shrink-0">
+        <circle cx="8" cy="8" r="7.5" stroke="currentColor" />
+        <path d="M8 7v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="8" cy="5" r="0.75" fill="currentColor" />
+      </svg>
+      <div className={`absolute ${box} top-5 w-56 bg-slate-800 text-white text-xs rounded-lg px-3 py-2.5 invisible group-hover:visible z-20 shadow-xl leading-relaxed space-y-2`}>
+        <div className="flex items-start gap-2">
+          <span className="mt-0.5 w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#E24B4A' }} />
+          <span><strong>Rojo &gt; 36%</strong> — riesgo alto. Intervención urgente.</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <span className="mt-0.5 w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#EF9F27' }} />
+          <span><strong>Ámbar 22–36%</strong> — riesgo moderado. Monitorear.</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <span className="mt-0.5 w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: '#378ADD' }} />
+          <span><strong>Azul &lt; 22%</strong> — riesgo bajo. Fidelizar.</span>
+        </div>
+        <div className="border-t border-slate-600 pt-2 text-slate-300">
+          El arco y la aguja indican la probabilidad de que ese cliente cancele su suscripción.
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function GaugeSkeleton() {
   return (
     <div className="animate-pulse">
@@ -159,7 +189,10 @@ function ModelCard({ name, result, loading }) {
   const n = result ? nivel(result.proba) : null
   return (
     <div className="bg-white rounded-xl border p-4" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-      <div className="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider">{name}</div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{name}</div>
+        <GaugeInfoTooltip align="right" />
+      </div>
       {loading ? (
         <GaugeSkeleton />
       ) : !result ? (
@@ -376,7 +409,10 @@ export default function SimuladorPrediccion({ navData }) {
             className="bg-white rounded-xl border p-4"
             style={{ borderColor: results ? '#86efac' : 'rgba(15,23,42,0.08)' }}
           >
-            <div className="text-xs font-semibold text-slate-700 mb-3">Resultado final (ensemble)</div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs font-semibold text-slate-700">Resultado final (ensemble)</div>
+              <GaugeInfoTooltip align="right" />
+            </div>
             {computing ? (
               <div className="animate-pulse py-2">
                 <div className="h-20 rounded-lg mx-auto mb-3" style={{ background: '#f1f5f9' }} />
