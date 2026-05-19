@@ -1,3 +1,6 @@
+import React, { useMemo } from 'react';
+import DataTable from '../components/table/DataTable';
+
 const KPIS = [
   { label: 'Alto riesgo', value: '687', sub: '14.0% del total de clientes', color: '#be123c' },
   { label: 'Riesgo medio', value: '1,582', sub: '32.4% del total de clientes', color: '#b45309' },
@@ -18,6 +21,83 @@ const PILL_STYLE = {
 }
 
 export default function ClientesEnRiesgo({ onNavigate }) {
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Cliente',
+        cell: ({ row }) => (
+          <div>
+            <div className="text-sm font-medium text-slate-900">{row.original.name}</div>
+            <div className="text-xs text-slate-400">ID: {row.original.id}</div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'plan',
+        header: 'Plan',
+        cell: ({ getValue }) => <span className="text-sm text-slate-500">{getValue()}</span>,
+      },
+      {
+        accessorKey: 'pct',
+        header: 'Probabilidad',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2 pr-4">
+            <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${row.original.pct}%`, background: row.original.color }} />
+            </div>
+            <span className="text-xs text-slate-600 w-8">{row.original.pct}%</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'risk',
+        header: 'Riesgo',
+        cell: ({ row }) => (
+          <span className="text-xs px-2 py-1 rounded-full font-medium w-fit inline-block" style={PILL_STYLE[row.original.riskType]}>
+            {row.original.risk}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'date',
+        header: 'Última activ.',
+        cell: ({ getValue }) => <span className="text-sm text-slate-500">{getValue()}</span>,
+      },
+      {
+        accessorKey: 'exec',
+        header: 'Ejecutivo',
+        cell: ({ getValue }) => <span className="text-sm text-slate-700">{getValue()}</span>,
+      },
+      {
+        id: 'action',
+        header: 'Acción',
+        enableSorting: false,
+        enableGrouping: false,
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={() => {
+              if (row.original.primary) {
+                alert(`Contactando a ${row.original.name}...`);
+              } else {
+                onNavigate?.('detalle');
+              }
+            }}
+            className="text-xs px-2.5 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80 animate-fade-in"
+            style={row.original.primary
+              ? { background: '#4f6ef7', color: '#fff' }
+              : { background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0' }
+            }
+          >
+            {row.original.primary ? 'Contactar' : 'Ver detalle'}
+          </button>
+        ),
+      },
+    ],
+    [onNavigate]
+  );
+
   return (
     <div className="p-6">
       <p className="text-sm text-slate-500 mb-5">
@@ -44,55 +124,9 @@ export default function ClientesEnRiesgo({ onNavigate }) {
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
-        <div
-          className="grid text-xs text-slate-500 font-medium uppercase tracking-wider px-4 py-2.5"
-          style={{ gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr 1.2fr 1fr', background: '#f8fafc', borderBottom: '1px solid rgba(15,23,42,0.06)' }}
-        >
-          <span>Cliente</span>
-          <span>Plan</span>
-          <span>Probabilidad</span>
-          <span>Riesgo</span>
-          <span>Última activ.</span>
-          <span>Ejecutivo</span>
-          <span>Acción</span>
-        </div>
-
-        {CLIENTS.map((c) => (
-          <div
-            key={c.id}
-            className="grid items-center px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
-            style={{ gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr 1.2fr 1fr' }}
-          >
-            <div>
-              <div className="text-sm font-medium text-slate-900">{c.name}</div>
-              <div className="text-xs text-slate-400">ID: {c.id}</div>
-            </div>
-            <span className="text-sm text-slate-500">{c.plan}</span>
-            <div className="flex items-center gap-2 pr-4">
-              <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${c.pct}%`, background: c.color }} />
-              </div>
-              <span className="text-xs text-slate-600 w-8">{c.pct}%</span>
-            </div>
-            <span className="text-xs px-2 py-1 rounded-full font-medium w-fit" style={PILL_STYLE[c.riskType]}>
-              {c.risk}
-            </span>
-            <span className="text-sm text-slate-500">{c.date}</span>
-            <span className="text-sm text-slate-700">{c.exec}</span>
-            <button
-              className="text-xs px-2.5 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80"
-              style={c.primary
-                ? { background: '#4f6ef7', color: '#fff' }
-                : { background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0' }
-              }
-            >
-              {c.primary ? 'Contactar' : 'Ver detalle'}
-            </button>
-          </div>
-        ))}
-      </div>
+      {/* Dynamic Table */}
+      <DataTable columns={columns} data={CLIENTS} defaultPageSize={5} />
     </div>
   )
 }
+
