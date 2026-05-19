@@ -1,0 +1,6 @@
+name,id,plan,pct,color,risk,riskType,date,exec,primary
+TechNova Solutions,C-10458,Básico,78,#E24B4A,Alto,red,05/06,Laura G.,true
+DataPro Analytics,C-10421,Esencial,67,#E24B4A,Alto,red,02/06,Carlos R.,false
+WebIntelli SAS,C-10387,Pro,62,#E24B4A,Alto,red,31/05,Laura G.,false
+Creative Minds,C-10312,Básico,58,#EF9F27,Medio,amber,01/06,Javier M.,true
+CloudWare Ltd.,C-10298,Esencial,54,#EF9F27,Medio,amber,03/06,Sofía H.,false

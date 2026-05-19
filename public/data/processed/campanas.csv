@@ -1,0 +1,6 @@
+name,sub,segment,clients,status,statusType,owner,progress
+Rescate Pro,Incentivo para planes Pro,Riesgo alto · Pro,842,Activa,green,Ana M.,62
+Follow-up Enterprise,Seguimiento cuentas Enterprise,Enterprise · Riesgo medio/alto,612,Activa,green,Juan P.,48
+Bono Fidelidad Q2,Bono por permanencia,Riesgo medio · Todos,1024,Programada,blue,Laura S.,0
+Win-back inactivos,Reactivar clientes inactivos,Inactivos 30+ días · Alto,216,Activa,green,Ana M.,73
+Cross-sell Plus,Upgrade a Plus para bajo riesgo,Riesgo bajo · Básico,152,Finalizada,gray,Juan P.,100

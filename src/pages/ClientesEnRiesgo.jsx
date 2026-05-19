@@ -1,18 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import DataTable from '../components/table/DataTable';
+import useLoadDataset from '../hooks/useLoadDataset';
 
 const KPIS = [
   { label: 'Alto riesgo', value: '687', sub: '14.0% del total de clientes', color: '#be123c' },
   { label: 'Riesgo medio', value: '1,582', sub: '32.4% del total de clientes', color: '#b45309' },
   { label: 'Cuentas intervenidas', value: '342', sub: '22.1% de alto riesgo', color: '#047857' },
-]
-
-const CLIENTS = [
-  { name: 'TechNova Solutions', id: 'C-10458', plan: 'Básico', pct: 78, color: '#E24B4A', risk: 'Alto', riskType: 'red', date: '05/06', exec: 'Laura G.', primary: true },
-  { name: 'DataPro Analytics', id: 'C-10421', plan: 'Esencial', pct: 67, color: '#E24B4A', risk: 'Alto', riskType: 'red', date: '02/06', exec: 'Carlos R.', primary: false },
-  { name: 'WebIntelli SAS', id: 'C-10387', plan: 'Pro', pct: 62, color: '#E24B4A', risk: 'Alto', riskType: 'red', date: '31/05', exec: 'Laura G.', primary: false },
-  { name: 'Creative Minds', id: 'C-10312', plan: 'Básico', pct: 58, color: '#EF9F27', risk: 'Medio', riskType: 'amber', date: '01/06', exec: 'Javier M.', primary: true },
-  { name: 'CloudWare Ltd.', id: 'C-10298', plan: 'Esencial', pct: 54, color: '#EF9F27', risk: 'Medio', riskType: 'amber', date: '03/06', exec: 'Sofía H.', primary: false },
 ]
 
 const PILL_STYLE = {
@@ -21,6 +14,12 @@ const PILL_STYLE = {
 }
 
 export default function ClientesEnRiesgo({ onNavigate }) {
+  const { data: clients, isLoading, error, execute } = useLoadDataset();
+
+  useEffect(() => {
+    execute('processed/clientes_en_riesgo');
+  }, [execute]);
+
   const columns = useMemo(
     () => [
       {
@@ -125,7 +124,13 @@ export default function ClientesEnRiesgo({ onNavigate }) {
       </div>
 
       {/* Dynamic Table */}
-      <DataTable columns={columns} data={CLIENTS} defaultPageSize={5} />
+      <DataTable
+        columns={columns}
+        data={clients}
+        isLoading={isLoading}
+        error={error}
+        defaultPageSize={5}
+      />
     </div>
   )
 }

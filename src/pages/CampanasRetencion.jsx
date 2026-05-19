@@ -1,16 +1,12 @@
+import React, { useMemo, useEffect } from 'react';
+import DataTable from '../components/table/DataTable';
+import useLoadDataset from '../hooks/useLoadDataset';
+
 const KPIS = [
   { label: 'Campañas activas', value: '5', sub: '2 finalizan pronto' },
   { label: 'Clientes objetivo', value: '2,846', sub: '+12.4% vs. período anterior' },
   { label: 'Tasa de respuesta', value: '27.3%', sub: '+3.7pp vs. período anterior' },
   { label: 'Retención lograda', value: '18.6%', sub: '+2.9pp vs. período anterior' },
-]
-
-const CAMPAIGNS = [
-  { name: 'Rescate Pro', sub: 'Incentivo para planes Pro', segment: 'Riesgo alto · Pro', clients: 842, status: 'Activa', statusType: 'green', owner: 'Ana M.', progress: 62 },
-  { name: 'Follow-up Enterprise', sub: 'Seguimiento cuentas Enterprise', segment: 'Enterprise · Riesgo medio/alto', clients: 612, status: 'Activa', statusType: 'green', owner: 'Juan P.', progress: 48 },
-  { name: 'Bono Fidelidad Q2', sub: 'Bono por permanencia', segment: 'Riesgo medio · Todos', clients: 1024, status: 'Programada', statusType: 'blue', owner: 'Laura S.', progress: 0 },
-  { name: 'Win-back inactivos', sub: 'Reactivar clientes inactivos', segment: 'Inactivos 30+ días · Alto', clients: 216, status: 'Activa', statusType: 'green', owner: 'Ana M.', progress: 73 },
-  { name: 'Cross-sell Plus', sub: 'Upgrade a Plus para bajo riesgo', segment: 'Riesgo bajo · Básico', clients: 152, status: 'Finalizada', statusType: 'gray', owner: 'Juan P.', progress: 100 },
 ]
 
 const STATUS_STYLE = {
@@ -30,6 +26,64 @@ function Card({ children, className = '' }) {
 }
 
 export default function CampanasRetencion({ onNavigate }) {
+  const { data: campaigns, isLoading, error, execute } = useLoadDataset();
+
+  useEffect(() => {
+    execute('processed/campanas');
+  }, [execute]);
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Campaña',
+        cell: ({ row }) => (
+          <div>
+            <div className="text-sm font-medium text-slate-800">{row.original.name}</div>
+            <div className="text-xs text-slate-400 mt-0.5">{row.original.sub}</div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'segment',
+        header: 'Segmento',
+        cell: ({ getValue }) => <span className="text-xs text-slate-500">{getValue()}</span>,
+      },
+      {
+        accessorKey: 'clients',
+        header: 'Clientes',
+        cell: ({ getValue }) => <span className="text-sm text-slate-700">{getValue()?.toLocaleString()}</span>,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Estado',
+        cell: ({ row }) => (
+          <span className="text-xs px-2 py-0.5 rounded-full w-fit inline-block font-medium" style={STATUS_STYLE[row.original.statusType]}>
+            {row.original.status}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'owner',
+        header: 'Responsable',
+        cell: ({ getValue }) => <span className="text-sm text-slate-700">{getValue()}</span>,
+      },
+      {
+        accessorKey: 'progress',
+        header: 'Avance',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1.5 pr-2">
+            <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${row.original.progress}%`, background: '#4f6ef7' }} />
+            </div>
+            <span className="text-xs text-slate-400 w-7">{row.original.progress}%</span>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
+
   return (
     <div className="p-6">
       <p className="text-sm text-slate-500 mb-5">
@@ -49,38 +103,15 @@ export default function CampanasRetencion({ onNavigate }) {
 
       <div className="flex gap-4">
         {/* Campaigns table */}
-        <div className="flex-1">
-          <Card>
-            <div className="text-xs font-semibold text-slate-700 mb-3">Campañas activas y programadas</div>
-            <div
-              className="grid text-xs text-slate-500 font-medium uppercase tracking-wider px-3 py-2 rounded-t-lg"
-              style={{ gridTemplateColumns: '2fr 1.5fr 0.8fr 1fr 1fr 1.2fr', background: '#f8fafc', borderBottom: '1px solid rgba(15,23,42,0.06)' }}
-            >
-              <span>Campaña</span><span>Segmento</span><span>Clientes</span><span>Estado</span><span>Responsable</span><span>Avance</span>
-            </div>
-            {CAMPAIGNS.map((c) => (
-              <div
-                key={c.name}
-                className="grid items-center px-3 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
-                style={{ gridTemplateColumns: '2fr 1.5fr 0.8fr 1fr 1fr 1.2fr' }}
-              >
-                <div>
-                  <div className="text-sm font-medium text-slate-800">{c.name}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">{c.sub}</div>
-                </div>
-                <span className="text-xs text-slate-500">{c.segment}</span>
-                <span className="text-sm text-slate-700">{c.clients.toLocaleString()}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full w-fit" style={STATUS_STYLE[c.statusType]}>{c.status}</span>
-                <span className="text-sm text-slate-700">{c.owner}</span>
-                <div className="flex items-center gap-1.5 pr-2">
-                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${c.progress}%`, background: '#4f6ef7' }} />
-                  </div>
-                  <span className="text-xs text-slate-400 w-7">{c.progress}%</span>
-                </div>
-              </div>
-            ))}
-          </Card>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-semibold text-slate-700 mb-3">Campañas activas y programadas</div>
+          <DataTable
+            columns={columns}
+            data={campaigns}
+            isLoading={isLoading}
+            error={error}
+            defaultPageSize={5}
+          />
         </div>
 
         {/* Form */}
@@ -110,3 +141,4 @@ export default function CampanasRetencion({ onNavigate }) {
     </div>
   )
 }
+
